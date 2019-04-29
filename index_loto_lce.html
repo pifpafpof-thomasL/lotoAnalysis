@@ -1,0 +1,366 @@
+<!--ATTENTION LE PROGRAMME NE MARCHE PASD AVEC INTERNET EXPLOERER (LA GRILLE NE SE TRACE PAS ()probleme avec element document et child)-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>LOTO MAGIQUE</title>
+
+  <style type="text/css">
+    /*------------------------------positionnement de quelque element graphique----------------------------------*/
+    /*formatage du texte dans la bvulle (le message)*/
+    #textBulle {
+      position: absolute;
+      left: 112px;
+      top: 43px;
+      width: 230px;
+      height: 118px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      padding-left: 30px;
+      padding-top: 40px;
+    }
+
+    /*permet de placer le message en absolu*/
+    #message {
+      position: relative;
+    }
+
+    /*roulotte en haut a droite*/
+    #roulotte {
+      position: absolute;
+      left: 600px;
+      top: 156px;
+    }
+
+    /*-----------------------------------------------------------------------------*/
+
+
+    /*------------------------------style des cases de tableau--------------------------------*/
+    .vide
+
+    /*le style quand une case n'est pas selectionnée*/
+      {
+      background-color: grey;
+    }
+
+    .select
+
+    /*le style quand une clase est selectionner*/
+      {
+      background-color: red;
+    }
+
+    .num_winner
+
+    /*style des cases ou et afficher les nombre gagant*/
+      {
+      background-color: white;
+    }
+
+    /*-------------------------------------------------------------------------------------------------*/
+  </style>
+
+
+  <script src="jsloto_cle.js" type="text/javascript"></script>
+  <script type="text/javascript">
+
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-----------------------------------------initialisation-----------------------------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+
+    //------------------------------bloc de demande pour la valeur du nbre de boule et le nbre de case (avec prompt)
+    // var number_cases = prompt('Choix du nombre de cases (3x3,4x4,5x5,6x6,..etc..) ?', '20');
+    // var casess = parseInt(number_cases); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+    var casess = 9; // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+
+    // var nbr_boul_max = prompt('Avec combien de boules voulez vous jouer','pas superieur au nombre de cases divisé par )');
+    //var nbr_boul_max = prompt('Avec combien de boules voulez vous jouer','5');
+    //var compteur_max = parseInt(nbr_boul_max); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+    compteur_max = 4; // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+
+
+    // var miseJoueur = prompt('Quelle est votre mise (entre 1€ et 100€) ?', '50');
+    // var mise = parseInt(miseJoueur); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+
+
+    //-----------------------------------------------------------------------------------------------------------
+    var num_playeur = new Array();//tableau ou l'on range les valeur du joueur
+    var compteur = 0;//compteur de nombre cocher a 0
+
+    //initialisation des valeur a 0 (5 valeur dans le tableau pour les 5 types de victoire)
+    var compteur_roulotte = 0;
+
+    var miseJoueur = 0;
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+
+    function changer_boules_cases() {
+      var number_cases = prompt('Combien de cases (3x3,4x4,5x5,6x6,..etc..) ?', '25');
+      casess = parseInt(number_cases); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+
+      // var nbr_boul_max = prompt('Avec combien de boules voulez vous jouer','pas superieur au nombre de cases divisé par )');
+      nbr_boul_max = prompt('Combien de boules ?', '5');
+      compteur_max = parseInt(nbr_boul_max); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+
+      var table = document.getElementById("table_grille");
+      document.getElementById("grille").removeChild(table); //efface la table si elle a été deja generée	
+      create_grille(casess);
+    }
+
+
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-----------------------------------------fonction et procedure  d'affichage-------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+    /**
+            BUT: permet de tracer un tableau comprennant les valeurs du tirage gagant
+            E : numero_gagant : type structuré : tableau d'entier ; corespond au tableau comprennant les chiffres gagants 
+        E : boule_max : type primitif : entier ;correspond au nombre de boule que le joueur a choisi
+     
+          */
+    /* proc create c'est fixe (entier, boule_max) et (tableau,numero_gagant) */
+    function create(boule_max, numero_gagant) {
+      //--------------------------fait tourner la boule----------------------------------
+      var timer;
+      timer = window.setTimeout("roule_roulotte()", 20);
+      //------------------------------------------------------------------------------------
+      var balise_a_remplir = document.getElementById("remplir"); //on selection la balise que l'on va remplir avec d'autre balise (ici <p>)
+      var balise_table = document.createElement("table"); // on creait un element table
+      balise_table.setAttribute("id", 'chiffre_win'); //oin lui rajoute ensuite un identifiant 
+      balise_table.setAttribute("border", 1);	  //on rajoute a table des attribut
+      balise_a_remplir.appendChild(balise_table); //puis on l'insere dans la balise a remplir (dans un paragraphe)
+
+      var balise_tr = document.createElement("tr"); //creation de la balise tr
+      balise_table.appendChild(balise_tr); //insertion dans la balise table
+
+      for (var j = 0; j < boule_max; j++) //pour pouvoir creer un tableau de taille varaible (ici jusqu'au nombre de boule max)
+      {
+        var balise_td = document.createElement("td") //creation de l'element td 
+        balise_td.setAttribute("class", 'num_winner'); //on lui attribut un id
+        balise_td.appendChild(document.createTextNode(numero_gagant[j])); // ici on lui attribut une valeur entre les 2 balise (ici le 	chiffre gagant
+        balise_tr.appendChild(balise_td);//puis on l'insere ddans la balise tr
+      }
+      //document.getElementById("tableau_rempli").removeChild(balise_table);
+    }
+
+    function timerPopup1() {
+      window.setTimeout("popup1()",3*60*1000);
+      window.setTimeout("popup2()",9*60*1000);
+      window.setTimeout("popup3()",13*60*1000);
+      // window.setTimeout("roule_roulotte()", 2000); ///on relan,ce la fonction toutes les 20ms
+    }
+    function popup3() {
+      alert("L’utilisation de préservatif prévient la transmission du VIH");
+    }
+    function popup2() {
+      alert("Jouer peut causer une dépendance");
+    }
+    function popup1() {
+      alert("Les prénoms les plus donnés en 2018 sont Emma et Gabriel");
+    }
+
+    /**
+            BUT: 
+            E : nombre_cases : type primitif : entier ; correspond au nombre de cases que le joueur a choisi 
+          */
+    /* proc create_grille c'est fixe (entier, taille) */
+    function create_grille(taille) {
+      var affiche_chiffre = 0; //permet de faire un compteur pour remplir les valeur a l'interieur de la balise (chiffre compris entre 1 et le //nombre de boule maximum
+
+      timerPopup1();
+      document.getElementById('compteurMax').innerHTML = compteur_max;
+
+
+      //ici j'ai decider de creer que des carré																								 
+      var longeur = Math.floor(Math.sqrt(taille));//prend la racine ou la racine la plus p^roche
+
+      // document.removeChild("table"); //efface la table si elle a été deja generée	
+      var balise_a_remplir = document.getElementById("grille"); //selection avec dom de la balise a remplir (ici <p>)
+      var balise_table = document.createElement("table"); //creation d'une balise table
+      //------------------------methode 1 pour creer des attribut au balise-----------------------
+      balise_table.setAttribute("border", 1);// rajou a table d'attribut(ici une bordure de 1px)
+      balise_table.setAttribute("id", 'table_grille'); //on lui rajoute ensuite un identifiant 
+      balise_a_remplir.appendChild(balise_table);//puis on met la balise table dans la balise a remplir
+      //------------------------------------------------------------------------------------------
+      //------------------------methode 2 pour creer des attribut au balise-----------------------
+      //var border = document.createAttribute("border");
+      //border.nodeValue = "1px";	 
+      // balise_table.setAttributeNode(border);		 
+      //------------------------------------------------------------------------------------------
+
+      for (var i = 0; i < longeur; i++)//creation des lignes
+      {
+        var balise_tr = document.createElement("tr"); //Creation d'une balise tr
+        balise_table.appendChild(balise_tr);//inseretion de tr dans la balise table
+
+        for (var j = 0; j < longeur; j++)//creation des colone
+        {
+          affiche_chiffre = affiche_chiffre + 1; //compteur +1 permet d'afficher les chiffre en texte a l'interieur de chaque case
+          var balise_td = document.createElement("td"); //creation de la balise td
+          balise_td.setAttribute("class", 'vide'); // rajout d'une class a vide (norml debut du jeu)
+          balise_td.setAttribute("id", 'a' + affiche_chiffre); // rajout d'identifiant 
+          balise_td.setAttribute("onclick", 'compteur =num_perso(this,compteur,num_playeur,compteur_max);');//rajout de la fonction de 	//selection
+          balise_td.appendChild(document.createTextNode(affiche_chiffre)); //rajout a l'interieur de chaque case un chiffre entre 1 et nbre //case max
+          balise_tr.appendChild(balise_td); //insertion de la balise dans tr
+        }
+      }
+
+    }
+
+    /**
+            BUT: initialiser le tirage quand on reclique sur tirage
+          */
+    /*  */
+    function int_grille() {
+      var table = document.getElementById("chiffre_win");
+      document.getElementById("remplir").removeChild(table); //efface la table si elle a été deja generée	
+    }
+
+    /**
+              BUT: faire tourner la roulotte
+          COM: on utilise un compteur qui represente le nombre d'image deja affichés
+            */
+    /*  */
+    function roule_roulotte() {
+      compteur_roulotte++; //compteur qui va de 1  a 8 parce qu'il y a 8 images a afficher
+      var timer; //varaible pour faire marcher le timer
+      document.getElementById("img_roulotte").src = compteur_roulotte + '.jpg'; // on ajoute 2 a la largeur
+
+      //alert(compteur_roulotte);
+
+      if (compteur_roulotte < 8) //si on a pas afficher les 8 image alors
+      {
+        timer = window.setTimeout("roule_roulotte()", 40); ///on relan,ce la fonction toutes les 20ms
+      }
+      else {
+        compteur_roulotte = 0; //on remet le compteur d'image a 0
+        document.getElementById("img_roulotte").src = getRndInteger(1, 8) + '.jpg'; // on ajoute 2 a la largeur
+        return;//et on revient a la fonction precedente
+      }
+    }
+
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------------------------------------------------------------------*/
+
+    /**
+              BUT: remplace les alert par un message dans la bulle de la presentatrice
+              E : type : type primitif : entier ; corespond au type de message
+          on a type=1 pour qd le nombre max de case n'a pas été select ; >20 : message pour afficher le type de victoire ;3:limite a la selection de case 
+          E : valeur_transmi : type primitif : entier ;permet de passé des parametre si besoin
+       
+            */
+    /* proc create c'est fixe (entier, boule_max) et (tableau,numero_gagant) */
+    function message(type, compteur_win) {
+      document.getElementById("img_mess").src = 'bulle.jpg'; //affichage de l'image avec la bulle
+
+      if (type == 'PAS ASSEZ')//si on selection pas assez de cases avec dfe cliquer sur voir tirage
+      {
+        // document.getElementById("textBulle").innerHTML = 'veuillez selectionner ' + valeur_transmi + ' cases (si vous voulez selectionner moins de cases veuillez change le nombre de boule maximum en cliquant sur <effacer grille et tirage>';
+        document.getElementById("textBulle").innerHTML = 'Veuillez selectionner ' + compteur_max + ' cases';
+      }
+
+      
+      if (type == 'MISE NULLE')//si on selection pas assez de cases avec dfe cliquer sur voir tirage
+      {
+        // document.getElementById("textBulle").innerHTML = 'veuillez selectionner ' + valeur_transmi + ' cases (si vous voulez selectionner moins de cases veuillez change le nombre de boule maximum en cliquant sur <effacer grille et tirage>';
+        document.getElementById("textBulle").innerHTML = 'Veuillez entrer une mise avant de tirer';
+      }
+
+      if (type == 'NB BOULES OK')// si on veut selectionner trop de cases
+      {
+        document.getElementById("textBulle").innerHTML = 'Vous avez selectionné ' + compteur_max +
+          ' cases, Cliquer sur le bouton \"Voir Tirage\" ou re-cliquer sur les chiffres pour changer votre choix';
+      }
+
+      if (type == 'TIRAGE FAIT') {
+        console.log('TIRAGE FAIT', compteur_win, compteur_max);
+        if (compteur_win === 0) {
+          document.getElementById("textBulle").innerHTML = 'Aucun numéro correct, vous avez perdu votre mise, Re-tentez votre chance !';
+          majGainsEtMise(0);
+        }
+        else if (compteur_win === compteur_max) {
+          document.getElementById("textBulle").innerHTML = 'JACKPOT x10 !!!';
+          majGainsEtMise(10);
+        }
+        else if (compteur_win > 0) {
+          document.getElementById("textBulle").innerHTML = 'Vous avez gagné ' + compteur_win + 'x la mise !';
+          majGainsEtMise(compteur_win);
+        }
+      }
+    }
+
+    function majGainsEtMise(facteur) {
+      var mise = document.getElementById('laMise').value;
+      var gain = parseInt(mise) * parseInt(facteur);
+      document.getElementById('gains').innerHTML = gain;
+      document.getElementById('laMise').value = facteur && parseInt(mise) + gain;
+    }
+
+  </script>
+</head>
+
+<body lang="fr" xml:lang="fr" onload="create_grille(casess);">
+  <!--ici on le met en preload pour qu'il voit la div "grille" a remplir-->
+
+  <div>
+    <h3>Bienvenu au Loto</h3>
+    Si 1 numéro sur <label id="compteurMax">5</label>
+     est tiré vous remportez 1x la mise<br>
+    Si 2 numéros 2x, 3 numéros 3x, 4 numéros 4x<br>
+    Si 5 numéros 10x la mise<br>
+    Si aucun numéro n’est tiré, vous perdez la mise.<br>
+  </div>
+  <br>
+  <label>Votre mise en € (un chiffre entre 1 et 100) ?
+    <INPUT id="laMise" name="laMise" type='number' step="10" min="1" max="100">
+  </label>
+  <br>
+
+  <!--balise qui est rempli de la grille de jeu (fonction create_grille)-->
+  <div id="grille">
+    <br>
+  </div>
+  <br>
+  <INPUT type="button" value="Voir tirage" onClick="securite(num_playeur,compteur_max,casess);">
+
+
+  <TABLE BORDER="0">
+    <!--table avec buton operateur-->
+    <TR>
+      <!-- <TD><INPUT type="button" value="Initialisation grille et tirage"
+          onClick="compteur = init(num_playeur,compteur_max,compteur,casess);int_grille();"></TD> -->
+    </TR>
+    <TR>
+      <!--actualisation de la page pour changer le nombre de boule et de case-->
+      <!-- <TD><INPUT type="button" value="changer valeur case/boule" onClick="document.location.reload();return(false);"></TD> -->
+    </TR>
+  </TABLE>
+
+  <div id="roulotte">
+    <img id="img_roulotte" src="loto.jpg" alt="" width="114" height="156" onClick="changer_boules_cases();" />
+    <!--balise qui est remplir par un tableau avec la combinaison gagante (function create)-->
+    <div id="remplir">
+    </div>
+  </div>
+  <label>Gains:
+    <label id="gains">0</label>
+  </label>
+  <br>
+
+  <!--balise qui sert a ecrire les message comme pas plus de boule, veuillez rentrer toute les boule ....-->
+  <div id="message">
+    <br />
+    <!--image de sophie qui quand elle parle,une bulle se rajoute a l'image (bulle.jpg)-->
+    <img id="img_mess" src="normal.jpg" alt="" width="444" height="335" />
+    <!-- <img id="img_mess" src="bulle.jpg" alt="" width="444" height="335" /> -->
+    <!-- <img src='bulle.jpg'> -->
+    <div id="textBulle">
+    </div>
+  </div>
+
+</body>
+
+</html>
