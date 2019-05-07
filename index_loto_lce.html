@@ -36,20 +36,6 @@
       top: 156px;
     }
 
-    /* #alrt {
-      position: absolute;
-      left: 150px;
-      top: 300px;
-      width: 191px;
-      border: ridge;
-      padding: 30px;
-      text-align: center;
-      z-index: 80;
-      background-image: url("./leaf.jpg");
-    } */
-
-
-
     /*-----------------------------------------------------------------------------*/
 
 
@@ -98,7 +84,6 @@
 
     // var miseJoueur = prompt('Quelle est votre mise (entre 1€ et 100€) ?', '50');
     // var mise = parseInt(miseJoueur); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
-
 
     //-----------------------------------------------------------------------------------------------------------
     var num_playeur = new Array();//tableau ou l'on range les valeur du joueur
@@ -160,35 +145,35 @@
     }
 
     function timerPopup() {
-      window.setTimeout("popup1()", 3 * 60 * 1000);
-      window.setTimeout("popup2()", 9 * 60 * 1000);
-      window.setTimeout("popup3()", 13 * 60 * 1000);
+      var msec = 1000; 
+      window.setTimeout("popup1()", 3 * 60 * msec); // 3 minutes
+      window.setTimeout("popup2()", 9 * 60 * msec);
+      window.setTimeout("popup3()", 13 * 60 * msec);
     }
     function myPopup(htmlText) {
       document.getElementById('alrt').innerHTML =
         '<b>' + htmlText + ' </b> \
-        <br><a target="_blank" rel="noopener noreferrer" href="https://www.thisisa404.org/">Vérifier</a> \
+        <br><a target="_blank" rel="noopener noreferrer" href="http://lesjeuxdehasardetdargent.com/">http://lesjeuxdehasardetdargent.com</a> \
         <br>';
       openModal();
-    }
-    function popup3() {
-      myPopup("L’utilisation de préservatif prévient la transmission du VIH");
-    }
-    function popup2() {
-      myPopup("Jouer peut causer une dépendance");
     }
     function popup1() {
       myPopup("Les prénoms les plus donnés en 2018 sont Emma et Gabriel");
     }
-
+    function popup2() {
+      myPopup("Jouer peut causer une dépendance");
+    }
+    function popup3() {
+      myPopup("L’utilisation de préservatif prévient la transmission du VIH");
+    }
     function openModal() {
       var modal = document.getElementById('myModal');
       modal.style.display = "block";     // open the modal 
-      
+
       // When the user clicks anywhere outside of the modal, close it
       window.onclick = function (event) {
         if (event.target == modal) {
-          modal.style.display = "none"; // close the modal
+          //modal.style.display = "none"; // close the modal
         }
       }
     }
@@ -352,24 +337,17 @@
     Si aucun numéro n’est tiré, vous perdez la mise.<br>
   </div>
   <br>
-  <label>Votre mise en € (un ch      <!-- <INPUT type="button" value="Ok merci" > -->
-iffre entre 1 et 100) ?
-    <INPUT id="laMise" name="la      <!-- <INPUT type="button" value="Ok merci" > -->
-Mise" type='number' step="10" min="1" max="100">
-  </label>      <!-- <INPUT type="button" value="Ok merci" > -->
+  <label>Votre mise en € (un chiffre entre 1 et 100) ?
+    <INPUT id="laMise" name="laMise" type='number' step="10" min="1" max="100">
+  </label>
+  <br>
 
-  <br>      <!-- <INPUT type="button" value="Ok merci" > -->
-
-      <!-- <INPUT type="button" value="Ok merci" > -->
-
-  <div id="myModal" class="moda      <!-- <INPUT type="button" value="Ok merci" > -->
-l">
+  <div id="myModal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
       <span class="close" onClick="closeModal();">&times;</span>
       <div id='alrt'></div>
     </div>
-
   </div>
 
   <!--balise qui est rempli de la grille de jeu (fonction create_grille)-->
@@ -408,8 +386,6 @@ l">
     <br />
     <!--image de sophie qui quand elle parle,une bulle se rajoute a l'image (bulle.jpg)-->
     <img id="img_mess" src="normal.jpg" alt="" width="444" height="335" />
-    <!-- <img id="img_mess" src="bulle.jpg" alt="" width="444" height="335" /> -->
-    <!-- <img src='bulle.jpg'> -->
     <div id="textBulle">
     </div>
   </div>
