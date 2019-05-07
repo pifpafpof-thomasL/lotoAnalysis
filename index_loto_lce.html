@@ -8,6 +8,8 @@
   <title>LOTO MAGIQUE</title>
 
   <style type="text/css">
+    @IMPORT URL('./myModal.css');
+
     /*------------------------------positionnement de quelque element graphique----------------------------------*/
     /*formatage du texte dans la bvulle (le message)*/
     #textBulle {
@@ -33,6 +35,20 @@
       left: 600px;
       top: 156px;
     }
+
+    /* #alrt {
+      position: absolute;
+      left: 150px;
+      top: 300px;
+      width: 191px;
+      border: ridge;
+      padding: 30px;
+      text-align: center;
+      z-index: 80;
+      background-image: url("./leaf.jpg");
+    } */
+
+
 
     /*-----------------------------------------------------------------------------*/
 
@@ -62,7 +78,6 @@
     /*-------------------------------------------------------------------------------------------------*/
   </style>
 
-
   <script src="jsloto_cle.js" type="text/javascript"></script>
   <script type="text/javascript">
 
@@ -73,7 +88,7 @@
     //------------------------------bloc de demande pour la valeur du nbre de boule et le nbre de case (avec prompt)
     // var number_cases = prompt('Choix du nombre de cases (3x3,4x4,5x5,6x6,..etc..) ?', '20');
     // var casess = parseInt(number_cases); // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
-    var casess = 9; // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
+    var casess = 16; // parseint parce que les valeur recuperé de la boite de dialogue sont des chaine de caractere
 
     // var nbr_boul_max = prompt('Avec combien de boules voulez vous jouer','pas superieur au nombre de cases divisé par )');
     //var nbr_boul_max = prompt('Avec combien de boules voulez vous jouer','5');
@@ -142,24 +157,47 @@
         balise_td.appendChild(document.createTextNode(numero_gagant[j])); // ici on lui attribut une valeur entre les 2 balise (ici le 	chiffre gagant
         balise_tr.appendChild(balise_td);//puis on l'insere ddans la balise tr
       }
-      //document.getElementById("tableau_rempli").removeChild(balise_table);
     }
 
-    function timerPopup1() {
-      window.setTimeout("popup1()",3*60*1000);
-      window.setTimeout("popup2()",9*60*1000);
-      window.setTimeout("popup3()",13*60*1000);
-      // window.setTimeout("roule_roulotte()", 2000); ///on relan,ce la fonction toutes les 20ms
+    function timerPopup() {
+      window.setTimeout("popup1()", 3 * 60 * 1000);
+      window.setTimeout("popup2()", 9 * 60 * 1000);
+      window.setTimeout("popup3()", 13 * 60 * 1000);
+    }
+    function myPopup(htmlText) {
+      document.getElementById('alrt').innerHTML =
+        '<b>' + htmlText + ' </b> \
+        <br><a target="_blank" rel="noopener noreferrer" href="https://www.thisisa404.org/">Vérifier</a> \
+        <br>';
+      openModal();
     }
     function popup3() {
-      alert("L’utilisation de préservatif prévient la transmission du VIH");
+      myPopup("L’utilisation de préservatif prévient la transmission du VIH");
     }
     function popup2() {
-      alert("Jouer peut causer une dépendance");
+      myPopup("Jouer peut causer une dépendance");
     }
     function popup1() {
-      alert("Les prénoms les plus donnés en 2018 sont Emma et Gabriel");
+      myPopup("Les prénoms les plus donnés en 2018 sont Emma et Gabriel");
     }
+
+    function openModal() {
+      var modal = document.getElementById('myModal');
+      modal.style.display = "block";     // open the modal 
+      
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none"; // close the modal
+        }
+      }
+    }
+    function closeModal() {
+      console.log("closeModal()");
+      var modal = document.getElementById('myModal');
+      modal.style.display = "none";
+    }
+
 
     /**
             BUT: 
@@ -169,9 +207,8 @@
     function create_grille(taille) {
       var affiche_chiffre = 0; //permet de faire un compteur pour remplir les valeur a l'interieur de la balise (chiffre compris entre 1 et le //nombre de boule maximum
 
-      timerPopup1();
+      timerPopup();
       document.getElementById('compteurMax').innerHTML = compteur_max;
-
 
       //ici j'ai decider de creer que des carré																								 
       var longeur = Math.floor(Math.sqrt(taille));//prend la racine ou la racine la plus p^roche
@@ -230,6 +267,7 @@
 
       //alert(compteur_roulotte);
 
+
       if (compteur_roulotte < 8) //si on a pas afficher les 8 image alors
       {
         timer = window.setTimeout("roule_roulotte()", 40); ///on relan,ce la fonction toutes les 20ms
@@ -262,7 +300,7 @@
         document.getElementById("textBulle").innerHTML = 'Veuillez selectionner ' + compteur_max + ' cases';
       }
 
-      
+
       if (type == 'MISE NULLE')//si on selection pas assez de cases avec dfe cliquer sur voir tirage
       {
         // document.getElementById("textBulle").innerHTML = 'veuillez selectionner ' + valeur_transmi + ' cases (si vous voulez selectionner moins de cases veuillez change le nombre de boule maximum en cliquant sur <effacer grille et tirage>';
@@ -308,16 +346,31 @@
   <div>
     <h3>Bienvenu au Loto</h3>
     Si 1 numéro sur <label id="compteurMax">5</label>
-     est tiré vous remportez 1x la mise<br>
+    est tiré vous remportez 1x la mise<br>
     Si 2 numéros 2x, 3 numéros 3x, 4 numéros 4x<br>
     Si 5 numéros 10x la mise<br>
     Si aucun numéro n’est tiré, vous perdez la mise.<br>
   </div>
   <br>
-  <label>Votre mise en € (un chiffre entre 1 et 100) ?
-    <INPUT id="laMise" name="laMise" type='number' step="10" min="1" max="100">
-  </label>
-  <br>
+  <label>Votre mise en € (un ch      <!-- <INPUT type="button" value="Ok merci" > -->
+iffre entre 1 et 100) ?
+    <INPUT id="laMise" name="la      <!-- <INPUT type="button" value="Ok merci" > -->
+Mise" type='number' step="10" min="1" max="100">
+  </label>      <!-- <INPUT type="button" value="Ok merci" > -->
+
+  <br>      <!-- <INPUT type="button" value="Ok merci" > -->
+
+      <!-- <INPUT type="button" value="Ok merci" > -->
+
+  <div id="myModal" class="moda      <!-- <INPUT type="button" value="Ok merci" > -->
+l">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close" onClick="closeModal();">&times;</span>
+      <div id='alrt'></div>
+    </div>
+
+  </div>
 
   <!--balise qui est rempli de la grille de jeu (fonction create_grille)-->
   <div id="grille">
